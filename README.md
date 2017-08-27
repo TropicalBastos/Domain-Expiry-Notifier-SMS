@@ -10,9 +10,11 @@ You will also need to create an account at nexmo for the api key and secret key 
 One last thing, you will need to add a receiving phone number in config.json so you can receive the texts
 
 To run:
+
 ```./domainnotifier.sh```
 
 To run in the background:
+
 ```./domainnotifier.sh --background```
 
 For windows users you can run with python:
