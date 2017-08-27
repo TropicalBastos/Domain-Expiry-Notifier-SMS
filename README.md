@@ -3,7 +3,7 @@ A process that checks every 5 seconds if a selected domain(s) has been renewed o
 
 To install dependencies run:
 
-```pip install requirements.txt```
+```pip install --upgrade -r requirements.txt```
 
 Then add any number of domains you wish for the script to monitor in domains.txt
 You will also need to create an account at nexmo for the api key and secret key which should be filled in the config.json
