@@ -9,6 +9,7 @@ import emailSender
 import sms
 from datetime import datetime
 from consoleColors import consoleColors
+from whois.parser import PywhoisError
 
 #global constants
 domainsPath = "../domains.txt"
@@ -25,12 +26,16 @@ def stringToDateTime(string):
     return datetime.strptime(string, "%Y-%m-%d %H:%M:%S")
 
 def hasDomainBeenRenewed(prevDate, newDate):
+    if prevDate == "None" or newDate is None:
+        return False
     if stringToDateTime(newDate) > stringToDateTime(prevDate):
         return True
     else:
         return False
 
 def hasDomainExpired(domainDate):
+    if domainDate == "None":
+        return True
     tempDate = stringToDateTime(domainDate)
     if(datetime.now() > tempDate):
         return True
@@ -65,8 +70,14 @@ def updateDomainMap():
             if domain == '':
                 continue
             print("Grabbing details for " + consoleColors.OKBLUE + domain + consoleColors.ENDC)
-            result = whois.whois(domain)
-            exp = result.expiration_date
+            
+            #handle exceptions if domain has been deleted from the nameservers
+            try:
+                result = whois.whois(domain)
+                exp = result.expiration_date
+            except PywhoisError as e:
+                exp = None
+            
             if isinstance(exp,list) or isinstance(exp, tuple):
                 domainMap[domain] = exp[0].__str__()
             else:
