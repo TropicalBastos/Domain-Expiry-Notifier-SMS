@@ -17,7 +17,7 @@ To run in the background:
 
 ```./domainnotifier.sh --background```
 
-For windows users you can run with python:
+For windows users you can run with python in the src folder:
 
 ```python main.py```
 
