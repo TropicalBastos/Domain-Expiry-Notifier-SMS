@@ -1,5 +1,11 @@
 {
     "recipient" : "Phone goes here with country code",
     "api_key" : "",
-    "api_secret" : ""
+    "api_secret" : "",
+    "domains": [
+        "stackoverflow.com",
+        "donaldpump.com",
+        "ianbastos.com",
+        "unebr.com"
+    ]
 }

@@ -19,7 +19,9 @@ domainMap = {}
 domains = []
 recipient = None
 with open("../config.json") as config:
-    recipient = json.load(config)['recipient']
+    conf = json.load(config)
+    recipient = conf['recipient']
+    domains = [x.strip() for x in conf['domains']]
 messenger = sms.SMS(recipient)
 
 def stringToDateTime(string):
@@ -83,11 +85,6 @@ def updateDomainMap():
             else:
                 domainMap[domain] = exp.__str__()
 
-#read all domains in file
-with open(domainsPath, "r") as domainsFile:
-    domains = domainsFile.readlines()
-    domains = [x.strip() for x in domains]
-
 #read saved data
 savedDataJson = None
 jsonExists = False
@@ -139,39 +136,40 @@ while(True):
     storedDomains = json.load(filePointer)
     
     for domain in storedDomains:
-        hasRenewed = hasDomainBeenRenewed(storedDomains[domain], domainMap[domain])
-        hasExpired = hasDomainExpired(domainMap[domain])
-        if(hasRenewed):
-            textBody = domain + " has been renewed"
-            print(consoleColors.WARNING + textBody + consoleColors.ENDC)
-            #ovewrite the file and update with new date
-            updateFile(filePointer)
-            print("Save data has been updated")
+        if(domain in domainMap):
+            hasRenewed = hasDomainBeenRenewed(storedDomains[domain], domainMap[domain])
+            hasExpired = hasDomainExpired(domainMap[domain])
+            if(hasRenewed):
+                textBody = domain + " has been renewed"
+                print(consoleColors.WARNING + textBody + consoleColors.ENDC)
+                #ovewrite the file and update with new date
+                updateFile(filePointer)
+                print("Save data has been updated")
 
-            #send a notification
-            print(consoleColors.OKGREEN + "\nSending notification\n" + consoleColors.ENDC)
-            messenger.sendSms(textBody)
-
-        if(hasExpired):
-            expiredPointer.seek(0)
-            tempDomainList = [x.strip() for x in expiredPointer.readlines()]
-            if(domain not in tempDomainList):
-                textBody = domain + " HAS EXPIRED"
-                printSeparator()
-                print(consoleColors.WARNING + domain + " HAS EXPIRED, GO GRAB IT OR BACKORDER IT" 
-                + consoleColors.ENDC)
-                printSeparator()
-                #now add domain to expired list
-                print("Writing " + domain + " to expired list at " + expiredDomains)
-                expiredPointer.write(domain + "\n")
-                expiredPointer.flush()
-
-                #send an sms notification
+                #send a notification
                 print(consoleColors.OKGREEN + "\nSending notification\n" + consoleColors.ENDC)
                 messenger.sendSms(textBody)
-                
-        else:
-            print(domain + consoleColors.OKBLUE + " no renewal present" + consoleColors.ENDC)
+
+            if(hasExpired):
+                expiredPointer.seek(0)
+                tempDomainList = [x.strip() for x in expiredPointer.readlines()]
+                if(domain not in tempDomainList):
+                    textBody = domain + " HAS EXPIRED"
+                    printSeparator()
+                    print(consoleColors.WARNING + domain + " HAS EXPIRED, GO GRAB IT OR BACKORDER IT" 
+                    + consoleColors.ENDC)
+                    printSeparator()
+                    #now add domain to expired list
+                    print("Writing " + domain + " to expired list at " + expiredDomains)
+                    expiredPointer.write(domain + "\n")
+                    expiredPointer.flush()
+
+                    #send an sms notification
+                    print(consoleColors.OKGREEN + "\nSending notification\n" + consoleColors.ENDC)
+                    messenger.sendSms(textBody)
+                    
+            else:
+                print(domain + consoleColors.OKBLUE + " no renewal present" + consoleColors.ENDC)
 
     updateDomainMap()        
     time.sleep(5)        
