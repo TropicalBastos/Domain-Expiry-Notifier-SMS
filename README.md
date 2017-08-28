@@ -21,7 +21,7 @@ For windows users you can run with python:
 
 ```python main.py```
 
-##Changelog
+## Changelog
 
 Version 0.2
 <ul>
